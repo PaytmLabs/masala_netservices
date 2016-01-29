@@ -1,0 +1,152 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 12.5.1
+  environments_path: ./test/environments
+  data_bags_path: ./test/data_bags
+  client_rb:
+    environment: kitchen
+
+platforms:
+  - name: centos67
+    driver_config:
+      box: boxcutter/centos67
+    attributes:
+      system:
+        primary_interface: eth1
+      masala_netservices:
+        keepalive_vi_1:
+          interface: eth1
+  - name: centos71
+    driver_config:
+      box: boxcutter/centos71
+    attributes:
+      system:
+        primary_interface: enp0s8
+      masala_netservices:
+        keepalive_vi_1:
+          interface: enp0s8
+  - name: centos72
+    driver_config:
+      box: boxcutter/centos72
+    attributes:
+      system:
+        primary_interface: enp0s8
+      masala_netservices:
+        keepalive_vi_1:
+          interface: enp0s8
+  - name: ubuntu1404
+    driver_config:
+      box: boxcutter/ubuntu1404
+    attributes:
+      system:
+        primary_interface: eth1
+      masala_netservices:
+        keepalive_vi_1:
+          interface: eth1
+  - name: ubuntu1504
+    driver_config:
+      box: boxcutter/ubuntu1504
+    attributes:
+      system:
+        primary_interface: eth1
+      masala_netservices:
+        keepalive_vi_1:
+          interface: eth1
+  - name: debian82
+    driver_config:
+      box: boxcutter/debian82
+    attributes:
+      system:
+        primary_interface: eth1
+      masala_netservices:
+        keepalive_vi_1:
+          interface: eth1
+
+suites:
+  - name: primary
+    run_list: ["recipe[masala_netservices::primary]"]
+    driver:
+      network:
+      - ["private_network", {ip: "10.10.10.11"}]
+      customize:
+        memory: 512
+        cpus: 1
+    attributes:
+      system:
+        short_hostname: 'ns-primary'
+        static_hosts:
+          10.10.10.11: ns-primary.kitchen.masalatest.com
+          10.10.10.12: ns-aux1.kitchen.masalatest.com
+          10.10.10.13: ns-aux2.kitchen.masalatest.com
+      openldap:
+        server: localhost
+        slapd_master: 10.10.10.11
+      ntp:
+        servers: ["0.pool.ntp.org", "1.pool.ntp.org"]
+        peers: ["10.10.10.12", "10.10.10.13"]
+        restrictions: ['10.0.0.0 mask 255.0.0.0 nomodify notrap']
+  - name: aux1
+    run_list: ["recipe[masala_netservices::auxiliary]"]
+    driver:
+      network:
+      - ["private_network", {ip: "10.10.10.12"}]
+      customize:
+        memory: 512
+        cpus: 1
+    attributes:
+      system:
+        short_hostname: 'ns-aux1'
+        static_hosts:
+          10.10.10.11: ns-primary.kitchen.masalatest.com
+          10.10.10.12: ns-aux1.kitchen.masalatest.com
+          10.10.10.13: ns-aux2.kitchen.masalatest.com
+      openldap:
+        server: localhost
+        slapd_master: 10.10.10.11
+        slapd_rid: 102
+      ntp:
+        servers: ["0.pool.ntp.org", "1.pool.ntp.org"]
+        peers: ["10.10.10.11", "10.10.10.13"]
+        restrictions: ['10.0.0.0 mask 255.0.0.0 nomodify notrap']
+      masala_netservices:
+        vip_mode: 'master'
+        keepalive_password: abcdefghij
+        keepalive_vi_1:
+          virtual_router_id: 30
+          vip: '10.10.10.20'
+          peer: '10.10.10.13'
+  - name: aux2
+    run_list: ["recipe[masala_netservices::auxiliary]"]
+    driver:
+      network:
+      - ["private_network", {ip: "10.10.10.13"}]
+      customize:
+        memory: 512
+        cpus: 1
+    attributes:
+      system:
+        short_hostname: 'ns-aux2'
+        static_hosts:
+          10.10.10.11: ns-primary.kitchen.masalatest.com
+          10.10.10.12: ns-aux1.kitchen.masalatest.com
+          10.10.10.13: ns-aux2.kitchen.masalatest.com
+      openldap:
+        server: localhost
+        slapd_master: 10.10.10.11
+        slapd_rid: 103
+      ntp:
+        servers: ["0.pool.ntp.org", "1.pool.ntp.org"]
+        peers: ["10.10.10.11", "10.10.10.12"]
+        restrictions: ['10.0.0.0 mask 255.0.0.0 nomodify notrap']
+      masala_netservices:
+        vip_mode: 'backup'
+        keepalive_password: abcdefghij
+        keepalive_vi_1:
+          virtual_router_id: 30
+          vip: '10.10.10.20'
+          peer: '10.10.10.12'
+
