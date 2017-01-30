@@ -2,6 +2,9 @@ source "https://supermarket.chef.io"
 
 ## Due to a design decision in berkshelf to not recursively resolve dependencies, we must declare all dependencies of our dependencies, to the full depth of the recursion
 
+# Dependencies of masala_dns_forward:
+cookbook 'masala_dns_forward', :git => 'https://github.com/PaytmLabs/masala_dns_forward.git', :ref => 'develop'
+
 # Dependencies of masala_ldap:
 cookbook 'openldap', :git => 'https://github.com/PaytmLabs/chef-openldap.git', :ref => 'feature-our-fixes'
 cookbook 'masala_ldap', :git => 'https://github.com/PaytmLabs/masala_ldap.git', :ref => 'develop'

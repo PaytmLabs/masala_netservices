@@ -9,4 +9,5 @@ version          '0.1.0'
 depends          'masala_base', '~> 0.1.0'
 depends          'masala_ldap', '~> 0.1.0'
 depends          'masala_keepalived', '~> 0.1.0'
+depends          'masala_dns_forward', '~> 0.1.0'
 

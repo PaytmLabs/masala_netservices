@@ -17,6 +17,7 @@
 # limitations under the License.
 
 include_recipe 'masala_base::default'
+include_recipe 'masala_dns_forward::default'
 include_recipe 'masala_ldap::slave'
 
 # Add keepalive support if requested

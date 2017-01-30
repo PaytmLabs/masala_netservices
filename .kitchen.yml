@@ -34,7 +34,7 @@ platforms:
       box: boxcutter/centos72
     attributes:
       system:
-        primary_interface: enp0s8
+        primary_interface: eth1
       masala_netservices:
         keepalive_vi_1:
           interface: enp0s8
@@ -89,6 +89,18 @@ suites:
         servers: ["0.pool.ntp.org", "1.pool.ntp.org"]
         peers: ["10.10.10.12", "10.10.10.13"]
         restrictions: ['10.0.0.0 mask 255.0.0.0 nomodify notrap']
+      masala_dns_forward:
+        allowed_clients:
+          - '10.10.10.0/24'
+          - 'localhost'
+          - 'localnets'
+        default_resolvers:
+          - '8.8.4.4'
+          - '8.8.8.8'
+        zone_resolvers:
+          orsn:
+            - '212.224.71.71'
+            - '79.133.62.62'
   - name: aux1
     run_list: ["recipe[masala_netservices::auxiliary]"]
     driver:
@@ -119,6 +131,18 @@ suites:
           virtual_router_id: 30
           vip: '10.10.10.20'
           peer: '10.10.10.13'
+      masala_dns_forward:
+        allowed_clients:
+          - '10.10.10.0/24'
+          - 'localhost'
+          - 'localnets'
+        default_resolvers:
+          - '8.8.4.4'
+          - '8.8.8.8'
+        zone_resolvers:
+          orsn:
+            - '212.224.71.71'
+            - '79.133.62.62'
   - name: aux2
     run_list: ["recipe[masala_netservices::auxiliary]"]
     driver:
@@ -149,4 +173,16 @@ suites:
           virtual_router_id: 30
           vip: '10.10.10.20'
           peer: '10.10.10.12'
+      masala_dns_forward:
+        allowed_clients:
+          - '10.10.10.0/24'
+          - 'localhost'
+          - 'localnets'
+        default_resolvers:
+          - '8.8.4.4'
+          - '8.8.8.8'
+        zone_resolvers:
+          orsn:
+            - '212.224.71.71'
+            - '79.133.62.62'
 
